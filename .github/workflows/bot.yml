@@ -44,7 +44,7 @@ jobs:
           echo "Initializing uiautomator2..."
           uiautomator2 init
 
-          # Step 3: Get the device serial dynamically
+          # Step 3: Get the device serial dynamically (for verification)
           echo "Finding device serial..."
           DEVICE_SERIAL=$(adb devices | awk 'NR==2 {print $1}')
           
@@ -52,10 +52,14 @@ jobs:
             echo "::error::Could not find attached device serial from 'adb devices'. Aborting."
             exit 1
           fi
-          echo "Found device serial: $DEVICE_SERIAL"
+          echo "Found device serial: $DEVICE_SERIAL. GramAddict will find this automatically."
 
-          # Step 4: Run the bot using the dynamically found serial
+          # Step 4: Run the bot using the pre-committed config file
           echo "Starting GramAddict for user $IG_USERNAME..."
           
-          # The --device argument must come BEFORE the 'run' subcommand.
-          gramaddict --device "$DEVICE_SERIAL" run --config accounts/$IG_USERNAME/config.yml
+          # -----------------------------------------------------------------
+          # 🚨 THIS IS THE FIX 🚨
+          # We remove the --device argument entirely. GramAddict will
+          # automatically use the device confirmed in Step 3.
+          # -----------------------------------------------------------------
+          gramaddict run --config accounts/$IG_USERNAME/config.yml
