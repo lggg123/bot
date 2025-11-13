@@ -13,7 +13,7 @@ jobs:
       - name: Set up Python 3.9
         uses: actions/setup-python@v5
         with:
-          python-version: "3.9" # IMPORTANT: GramAddict README says Python 3.10+ is not supported.
+          python-version: "3.9"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -31,6 +31,9 @@ jobs:
           api_token: ${{ secrets.API_KEY }}
           recipe_uuid: ea5fda48-fa8b-48c1-8acc-07d910856141 # Google Pixel XL 8.1
 
+      # -----------------------------------------------------------------
+      # 🚨 THIS STEP IS FULLY CORRECTED 🚨
+      # -----------------------------------------------------------------
       - name: Install and Run GramAddict
         env:
           IG_USERNAME: ${{ secrets.IG_USERNAME }}
@@ -40,19 +43,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install GramAddict
 
-          # Step 2: Initialize uiautomator2 on the device
+          # Step 2: Initialize uiautomator2 (this also confirms connection)
           echo "Initializing uiautomator2..."
           uiautomator2 init
 
-          # Step 3: Connect to the Genymotion device via ADB
-          # 🚨 FIX: Changed 'device_serial' to 'adb_serial'
-          echo "Connecting to device with serial: ${{ steps.genymotion.outputs.adb_serial }}"
-          adb connect ${{ steps.genymotion.outputs.adb_serial }}
-          echo "Verifying connected devices..."
-          adb devices
-
-          # Step 4: Run the bot using the pre-committed config file
-          echo "Starting GramAddict for user $IG_USERNAME..."
+          # Step 3: Get the device serial dynamically
+          # The 'adb devices' output looks like:
+          # List of devices attached
+          # localhost:12345	device
+          # We use 'awk' to get the first word ("localhost:12345") from the second line (NR==2).
+          echo "Finding device serial..."
+          DEVICE_SERIAL=$(adb devices | awk 'NR==2 {print $1}')
           
-          # 🚨 FIX: Changed 'device_serial' to 'adb_serial'
-          gramaddict run --config accounts/$IG_USERNAME/config.yml --device "${{ steps.genymotion.outputs.adb_serial }}"
+          if [ -z "$DEVICE_SERIAL" ]; then
+            echo "::error::Could not find attached device serial from 'adb devices'. Aborting."
+            exit 1
+          fi
+          echo "Found device serial: $DEVICE_SERIAL"
+
+          # Step 4: Run the bot using the dynamically found serial
+          echo "Starting GramAddict for user $IG_USERNAME..."
+          gramaddict run --config accounts/$IG_USERNAME/config.yml --device "$DEVICE_SERIAL"
