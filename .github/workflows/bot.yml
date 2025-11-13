@@ -45,12 +45,14 @@ jobs:
           uiautomator2 init
 
           # Step 3: Connect to the Genymotion device via ADB
-          echo "Connecting to device with serial: ${{ steps.genymotion.outputs.device_serial }}"
-          adb connect ${{ steps.genymotion.outputs.device_serial }}
+          # 🚨 FIX: Changed 'device_serial' to 'adb_serial'
+          echo "Connecting to device with serial: ${{ steps.genymotion.outputs.adb_serial }}"
+          adb connect ${{ steps.genymotion.outputs.adb_serial }}
           echo "Verifying connected devices..."
           adb devices
 
           # Step 4: Run the bot using the pre-committed config file
           echo "Starting GramAddict for user $IG_USERNAME..."
           
-          gramaddict run --config accounts/$IG_USERNAME/config.yml --device "${{ steps.genymotion.outputs.device_serial }}"
+          # 🚨 FIX: Changed 'device_serial' to 'adb_serial'
+          gramaddict run --config accounts/$IG_USERNAME/config.yml --device "${{ steps.genymotion.outputs.adb_serial }}"
