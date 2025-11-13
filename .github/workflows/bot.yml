@@ -31,9 +31,6 @@ jobs:
           api_token: ${{ secrets.API_KEY }}
           recipe_uuid: ea5fda48-fa8b-48c1-8acc-07d910856141 # Google Pixel XL 8.1
 
-      # -----------------------------------------------------------------
-      # 🚨 THIS STEP IS FULLY CORRECTED 🚨
-      # -----------------------------------------------------------------
       - name: Install and Run GramAddict
         env:
           IG_USERNAME: ${{ secrets.IG_USERNAME }}
@@ -48,10 +45,6 @@ jobs:
           uiautomator2 init
 
           # Step 3: Get the device serial dynamically
-          # The 'adb devices' output looks like:
-          # List of devices attached
-          # localhost:12345	device
-          # We use 'awk' to get the first word ("localhost:12345") from the second line (NR==2).
           echo "Finding device serial..."
           DEVICE_SERIAL=$(adb devices | awk 'NR==2 {print $1}')
           
@@ -62,5 +55,13 @@ jobs:
           echo "Found device serial: $DEVICE_SERIAL"
 
           # Step 4: Run the bot using the dynamically found serial
+          echo "Starting GramAddict for user $IG_USERNAME..."
+          
+          # -----------------------------------------------------------------
+          # 🚨 THIS IS THE FIX 🚨
+          # The --device argument must come BEFORE the 'run' subcommand.
+          # -----------------------------------------------------------------
+          gramaddict --device "$DEVICE_SERIAL" run --config accounts/$IG_USERNAME/config.yml
+     # Step 4: Run the bot using the dynamically found serial
           echo "Starting GramAddict for user $IG_USERNAME..."
           gramaddict run --config accounts/$IG_USERNAME/config.yml --device "$DEVICE_SERIAL"
