@@ -34,6 +34,7 @@ jobs:
       - name: Install and Run GramAddict
         env:
           IG_USERNAME: ${{ secrets.IG_USERNAME }}
+          IG_PASSWORD: ${{ secrets.IG_PASSWORD }}
         run: |
           # Step 1: Install GramAddict via pip
           echo "Installing GramAddict..."
@@ -54,12 +55,10 @@ jobs:
           fi
           echo "Found device serial: $DEVICE_SERIAL. GramAddict will find this automatically."
 
-          # Step 4: Run the bot using the pre-committed config file
+          # Step 4: Inject password into config file
+          echo "Injecting password into config..."
+          sed -i "s/password: .*/password: \"$IG_PASSWORD\"/" accounts/$IG_USERNAME/config.yml
+
+          # Step 5: Run the bot using the pre-committed config file
           echo "Starting GramAddict for user $IG_USERNAME..."
-          
-          # -----------------------------------------------------------------
-          # 🚨 THIS IS THE FIX 🚨
-          # We remove the --device argument entirely. GramAddict will
-          # automatically use the device confirmed in Step 3.
-          # -----------------------------------------------------------------
           gramaddict run --config accounts/$IG_USERNAME/config.yml
