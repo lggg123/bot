@@ -53,9 +53,4 @@ jobs:
           # Step 4: Run the bot using the pre-committed config file
           echo "Starting GramAddict for user $IG_USERNAME..."
           
-          # -----------------------------------------------------------------
-          # 🚨 THIS IS THE FIX 🚨
-          # We must pass the device serial to the run command so it knows 
-          # which of the connected devices to use.
-          # -----------------------------------------------------------------
           gramaddict run --config accounts/$IG_USERNAME/config.yml --device "${{ steps.genymotion.outputs.device_serial }}"
