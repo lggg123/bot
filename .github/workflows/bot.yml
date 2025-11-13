@@ -57,11 +57,5 @@ jobs:
           # Step 4: Run the bot using the dynamically found serial
           echo "Starting GramAddict for user $IG_USERNAME..."
           
-          # -----------------------------------------------------------------
-          # 🚨 THIS IS THE FIX 🚨
           # The --device argument must come BEFORE the 'run' subcommand.
-          # -----------------------------------------------------------------
           gramaddict --device "$DEVICE_SERIAL" run --config accounts/$IG_USERNAME/config.yml
-     # Step 4: Run the bot using the dynamically found serial
-          echo "Starting GramAddict for user $IG_USERNAME..."
-          gramaddict run --config accounts/$IG_USERNAME/config.yml --device "$DEVICE_SERIAL"
