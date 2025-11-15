@@ -14,7 +14,7 @@ password: "PLACEHOLDER_FOR_PASSWORD"  # 👈 This will be replaced by the GitHub
 # device: put_your_device_id_there # 'adb devices' in the console to know it.  It's needed only if you have more than 1 device connected
 app-id: com.instagram.android
 use-cloned-app: false
-allow-untested-ig-version: false # Using an untested version of IG would cause unexpected behavior because some elements in the user interface may have been changed
+allow-untested-ig-version: false
 screen-sleep: true
 screen-record: false
 speed-multiplier: 1
@@ -36,20 +36,20 @@ truncate-sources: 2-5
 ##############################################################################
 
 ## Interaction (active jobs)
-blogger-followers: [ username1, username2 ]
-blogger-following: [ username1, username2 ]
-blogger-post-likers: [ username1, username2 ]
-blogger: [ username1, username2 ]
-hashtag-likers-top: [ hashtag1, hashtag2 ]
-hashtag-likers-recent: [ hashtag1, hashtag2 ]
-hashtag-posts-top: [ hashtag1, hashtag2 ]
-hashtag-posts-recent: [ hashtag1, hashtag2 ]
-place-posts-top: [ place1, place2 ]
-place-posts-recent: [ place1, place2 ]
-place-likers-top: [ place1, place2 ]
-place-likers-recent: [ place1, place2 ]
-interact-from-file: [usernames1.txt 10-15, usernames2.txt 3]
-posts-from-file: posts.txt
+# blogger-followers: [username1, username2]
+# blogger-following: [username1, username2]
+# blogger-post-likers: [username1, username2]
+# blogger: [username1, username2]
+# hashtag-likers-top: [hashtag1, hashtag2]
+# hashtag-likers-recent: [hashtag1, hashtag2]
+# hashtag-posts-top: [hashtag1, hashtag2]
+# hashtag-posts-recent: [hashtag1, hashtag2]
+# place-posts-top: [place1, place2]
+# place-posts-recent: [place1, place2]
+# place-likers-top: [place1, place2]
+# place-likers-recent: [place1, place2]
+# interact-from-file: [usernames1.txt 10-15, usernames2.txt 3]
+# posts-from-file: posts.txt
 feed: 2-5 # is the number of likes you will give in feed
 
 ## Special modifier for jobs and sources
@@ -59,26 +59,26 @@ watch-photo-time: 3-4
 delete-interacted-users: true
 
 ## Unfollow (unfollow jobs)
-unfollow: 10-20
-unfollow-any: 10-20
-unfollow-non-followers: 10-20
-unfollow-any-non-followers: 10-20
-unfollow-any-followers: 10-20
-unfollow-from-file: [usernames1.txt 7-15, usernames2.txt 6]
+# unfollow: 10-20
+# unfollow-any: 10-20
+# unfollow-non-followers: 10-20
+# unfollow-any-non-followers: 10-20
+# unfollow-any-followers: 10-20
+# unfollow-from-file: [usernames1.txt 7-15, usernames2.txt 6]
 
 ## Special modifier for unfollow jobs
 sort-followers-newest-to-oldest: false
 unfollow-delay: 15
 
 ## Remove followers (active jobs)
-remove-followers-from-file: [remove1.txt 5-10, remove2.txt 6]
+# remove-followers-from-file: [remove1.txt 5-10, remove2.txt 6]
 
 ## Special modifier for remove followers
 delete-removed-followers: true
 
 ## Post Processing
 # analytics: false # no more supported
-telegram-reports: false # for using telegram-reports you have also to configure telegram.yml in your account folder
+telegram-reports: false
 
 ## Special actions
 # pre-script: pre_script_path_here
