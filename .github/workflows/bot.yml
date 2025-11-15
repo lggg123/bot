@@ -39,7 +39,7 @@ jobs:
           # Step 1: Install GramAddict via pip
           echo "Installing GramAddict..."
           python -m pip install --upgrade pip
-          pip install GramAddict
+          pip install GramAddict PyYAML
 
           # Step 2: Initialize uiautomator2 (this also confirms connection)
           echo "Initializing uiautomator2..."
@@ -55,9 +55,35 @@ jobs:
           fi
           echo "Found device serial: $DEVICE_SERIAL. GramAddict will find this automatically."
 
-          # Step 4: Inject password into config file
+          # Step 4: Inject password into config file using Python YAML parser
           echo "Injecting password into config..."
-          sed -i "s/password: .*/password: \"$IG_PASSWORD\"/" accounts/$IG_USERNAME/config.yml
+          python3 << 'PYTHON_SCRIPT'
+          import yaml
+          import os
+          import sys
+
+          config_path = f"accounts/{os.environ['IG_USERNAME']}/config.yml"
+
+          try:
+              # Read the config file
+              with open(config_path, 'r') as f:
+                  config = yaml.safe_load(f)
+              
+              # Update the password
+              config['password'] = os.environ['IG_PASSWORD']
+              
+              # Write back to file
+              with open(config_path, 'w') as f:
+                  yaml.dump(config, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+              
+              print(f"✅ Successfully updated password in {config_path}")
+              print(f"   Username: {config.get('username')}")
+              print(f"   Password set: {'Yes' if config.get('password') else 'No'}")
+              print(f"   Feed setting: {config.get('feed')}")
+          except Exception as e:
+              print(f"❌ Error updating config: {e}", file=sys.stderr)
+              sys.exit(1)
+          PYTHON_SCRIPT
 
           # Step 5: Run the bot using the pre-committed config file
           echo "Starting GramAddict for user $IG_USERNAME..."
