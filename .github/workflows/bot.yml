@@ -39,7 +39,7 @@ jobs:
           # Step 1: Install GramAddict via pip
           echo "Installing GramAddict..."
           python -m pip install --upgrade pip
-          pip install GramAddict PyYAML
+          pip install GramAddict ruamel.yaml
 
           # Step 2: Initialize uiautomator2 (this also confirms connection)
           echo "Initializing uiautomator2..."
@@ -55,26 +55,30 @@ jobs:
           fi
           echo "Found device serial: $DEVICE_SERIAL. GramAddict will find this automatically."
 
-          # Step 4: Inject password into config file using Python YAML parser
+          # Step 4: Inject password into config file preserving format
           echo "Injecting password into config..."
           python3 << 'PYTHON_SCRIPT'
-          import yaml
+          from ruamel.yaml import YAML
           import os
           import sys
 
+          yaml = YAML()
+          yaml.preserve_quotes = True
+          yaml.width = 4096  # Prevent line wrapping
+          
           config_path = f"accounts/{os.environ['IG_USERNAME']}/config.yml"
 
           try:
-              # Read the config file
+              # Read the config file preserving format
               with open(config_path, 'r') as f:
-                  config = yaml.safe_load(f)
+                  config = yaml.load(f)
               
-              # Update the password
+              # Update only the password field
               config['password'] = os.environ['IG_PASSWORD']
               
-              # Write back to file
+              # Write back preserving all formatting
               with open(config_path, 'w') as f:
-                  yaml.dump(config, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
+                  yaml.dump(config, f)
               
               print(f"✅ Successfully updated password in {config_path}")
               print(f"   Username: {config.get('username')}")
