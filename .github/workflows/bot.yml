@@ -39,7 +39,7 @@ jobs:
           # Step 1: Install GramAddict via pip
           echo "Installing GramAddict..."
           python -m pip install --upgrade pip
-          pip install GramAddict ruamel.yaml
+          pip install GramAddict
 
           # Step 2: Initialize uiautomator2 (this also confirms connection)
           echo "Initializing uiautomator2..."
@@ -55,39 +55,18 @@ jobs:
           fi
           echo "Found device serial: $DEVICE_SERIAL. GramAddict will find this automatically."
 
-          # Step 4: Inject password into config file preserving format
+          # Step 4: Inject password into config file with proper escaping
           echo "Injecting password into config..."
-          python3 << 'PYTHON_SCRIPT'
-          from ruamel.yaml import YAML
-          import os
-          import sys
-
-          yaml = YAML()
-          yaml.preserve_quotes = True
-          yaml.width = 4096  # Prevent line wrapping
+          # Escape special characters in password for sed
+          ESCAPED_PASSWORD=$(printf '%s\n' "$IG_PASSWORD" | sed -e 's/[\/&]/\\&/g')
+          sed -i "s/password: \"PLACEHOLDER_FOR_PASSWORD\"/password: \"${ESCAPED_PASSWORD}\"/" accounts/$IG_USERNAME/config.yml
           
-          config_path = f"accounts/{os.environ['IG_USERNAME']}/config.yml"
-
-          try:
-              # Read the config file preserving format
-              with open(config_path, 'r') as f:
-                  config = yaml.load(f)
-              
-              # Update only the password field
-              config['password'] = os.environ['IG_PASSWORD']
-              
-              # Write back preserving all formatting
-              with open(config_path, 'w') as f:
-                  yaml.dump(config, f)
-              
-              print(f"✅ Successfully updated password in {config_path}")
-              print(f"   Username: {config.get('username')}")
-              print(f"   Password set: {'Yes' if config.get('password') else 'No'}")
-              print(f"   Feed setting: {config.get('feed')}")
-          except Exception as e:
-              print(f"❌ Error updating config: {e}", file=sys.stderr)
-              sys.exit(1)
-          PYTHON_SCRIPT
+          # Verify the update
+          if grep -q "PLACEHOLDER_FOR_PASSWORD" accounts/$IG_USERNAME/config.yml; then
+            echo "::error::Failed to replace password placeholder"
+            exit 1
+          fi
+          echo "✅ Password injected successfully"
 
           # Step 5: Run the bot using the pre-committed config file
           echo "Starting GramAddict for user $IG_USERNAME..."
